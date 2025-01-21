@@ -17,7 +17,6 @@ git clone git@github.com:inwoong32/Autoware_FT.git ./autoware/src
 echo ""
 echo "### docker image build ###"
 ./build.sh
-cd ..
 
 echo ""
 echo "### Net setting ###"
