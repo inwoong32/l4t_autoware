@@ -1,9 +1,11 @@
 ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r36.2.0
 FROM ${BASE_IMAGE}
 
+ARG OPENCV_VERSION=4.5.4
+ENV OPENCV_VERSION=${OPENCV_VERSION}
+
 ENV AUTOWARE_VESION=2310
-ENV OPENCV_VERSION=4.5.4
-# ENV OPENCV_VERSION=4.10.0
+
 ENV AUTOWARE_REPOS=autoware_${AUTOWARE_VESION}
 ENV ROS_DOMAIN_ID=55
 ENV ROS_DISTRO=humble
@@ -63,10 +65,10 @@ RUN echo 'export LD_LIBRARY_PATH=/usr/local/cuda-12.2/lib64${LD_LIBRARY_PATH:+:$
 ## Opencv
 #========================================================================================
 
-COPY opencv_sh/install_opencv${OPENCV_VERSION}_Jetson.sh /tmp/install_opencv_Jetson.sh
+COPY docker/opencv_sh/install_opencv${OPENCV_VERSION}_Jetson.sh /tmp/install_opencv_Jetson.sh
 
-RUN chmod +x /tmp/install_opencv_Jetson.sh \
-    ./tmp/install_opencv_Jetson.sh
+RUN chmod +x /tmp/install_opencv_Jetson.sh
+RUN /tmp/install_opencv_Jetson.sh
 
 #========================================================================================
 ## ROS2 Humble
@@ -122,6 +124,7 @@ RUN echo '' >> ~/.bashrc && echo "## >> ROS SETTING >> " >> ~/.bashrc
 RUN echo "source ${ROS_ROOT}/setup.bash" >> ~/.bashrc
 RUN echo "export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}" >> ~/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
+RUN echo "export ${AUTOWARE_ROOT}/.cyclonedds.xml" >> ~/.bashrc
 
 
 #========================================================================================
@@ -147,15 +150,12 @@ RUN geographiclib-get-geoids egm2008-1
 #========================================================================================
 
 #mkdir WS
-RUN mkdir -p ${AUTOWARE_ROOT}/src
-
 # copy repos file from host
-COPY ${AUTOWARE_REPOS}.repos ${AUTOWARE_ROOT}/autoware.repos
+COPY autoware/src ${AUTOWARE_ROOT}/src
 
 # Install Autoware requires some ROS 2 packages
 RUN apt-get update && \
     cd ${AUTOWARE_ROOT} && \
-    vcs import src < autoware.repos && \
     source /opt/ros/humble/setup.bash && \
     rosdep init && \ 
     rosdep update && \ 
@@ -164,15 +164,11 @@ RUN apt-get update && \
     && apt-get clean
 
 # build code
-RUN cd ${AUTOWARE_ROOT} && \
-    source ${ROS_ROOT}/setup.bash && \
-    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --continue-on-error
+#RUN cd ${AUTOWARE_ROOT} && \
+#    source ${ROS_ROOT}/setup.bash && \
+#    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --continue-on-error
 	# colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-ignore nebula_decoders nebula_ros nebula_examples nebula_tests yabloc_image_processing
 
 CMD ["bash"]
 WORKDIR ${AUTOWARE_ROOT}
-
-CMD ["bash"]
-WORKDIR ${AUTOWARE_ROOT}
-
 
