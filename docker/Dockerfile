@@ -166,8 +166,7 @@ RUN apt-get update && \
 # build code
 #RUN cd ${AUTOWARE_ROOT} && \
 #    source ${ROS_ROOT}/setup.bash && \
-#    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --continue-on-error
-	# colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-ignore nebula_decoders nebula_ros nebula_examples nebula_tests yabloc_image_processing
+#    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 CMD ["bash"]
 WORKDIR ${AUTOWARE_ROOT}
