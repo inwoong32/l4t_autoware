@@ -124,7 +124,7 @@ RUN echo '' >> ~/.bashrc && echo "## >> ROS SETTING >> " >> ~/.bashrc
 RUN echo "source ${ROS_ROOT}/setup.bash" >> ~/.bashrc
 RUN echo "export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}" >> ~/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
-RUN echo "export ${AUTOWARE_ROOT}/.cyclonedds.xml" >> ~/.bashrc
+RUN echo "export CYCLONEDDS_URI=${AUTOWARE_ROOT}/.cyclonedds.xml" >> ~/.bashrc
 
 
 #========================================================================================
